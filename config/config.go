@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/jingweno/jqplay/jq"
 	"github.com/joeshaw/envdecode"
 )
 
@@ -24,8 +23,5 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	conf.JQVer = jq.Version
-
 	return conf, nil
 }

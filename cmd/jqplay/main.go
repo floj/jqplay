@@ -8,20 +8,22 @@ import (
 )
 
 func main() {
-	err := jq.Init()
+	jqi, err := jq.GetInfo()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.WithFields(log.Fields{
-		"version": jq.Version,
-		"path":    jq.Path,
+		"version": jqi.Version,
+		"path":    jqi.Path,
 	}).Info("initialized jq")
 
 	conf, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
+	conf.JQPath = jqi.Path
+	conf.JQVer = jqi.Version
 
 	log.WithFields(log.Fields{
 		"host": conf.Host,

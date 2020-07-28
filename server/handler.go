@@ -53,7 +53,7 @@ func (h *JQHandler) handleJqPost(c *gin.Context) {
 
 	// Evaling into ResponseWriter sets the status code to 200
 	// appending error message in the end if there's any
-	if err := j.Eval(ctx, c.Writer); err != nil {
+	if err := j.Eval(ctx, c.Writer, h.Config.JQPath); err != nil {
 		fmt.Fprint(c.Writer, err.Error())
 		h.logger(c).WithError(err).Info("jq error")
 	}

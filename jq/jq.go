@@ -53,14 +53,14 @@ func (j *JQ) Opts() []string {
 	return opts
 }
 
-func (j *JQ) Eval(ctx context.Context, w io.Writer) error {
+func (j *JQ) Eval(ctx context.Context, w io.Writer, path string) error {
 	if err := j.Validate(); err != nil {
 		return err
 	}
 
 	opts := j.Opts()
 	opts = append(opts, j.Q)
-	cmd := exec.CommandContext(ctx, Path, opts...)
+	cmd := exec.CommandContext(ctx, path, opts...)
 	cmd.Stdin = bytes.NewBufferString(j.J)
 	cmd.Env = make([]string, 0)
 	cmd.Stdout = w
