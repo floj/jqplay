@@ -1,3 +1,11 @@
+# Changes compated to github.com/jingweno
+
+- Replaced SQL storage (used for snippets) with embedded [bolddb](https://github.com/boltdb/bolt)
+- Updated Dockerfile to take advantage of multistage builds, final image is build _form scratch_ and runs as non-root user
+- Removed and Google Analytics and Ads
+
+Especially the dropped SQL dependency makes it easier to run it locally or in a selfhosted environment without the need for another container running postgres.
+
 # jqplay
 
 https://jqplay.org [![Build Status](https://travis-ci.org/jingweno/jqplay.svg?branch=master)](https://travis-ci.org/jingweno/jqplay) [![OpenCollective](https://opencollective.com/jqplay/backers/badge.svg)](#backers) [![OpenCollective](https://opencollective.com/jqplay/sponsors/badge.svg)](#sponsors)
