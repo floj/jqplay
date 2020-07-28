@@ -8,8 +8,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/boltdb/bolt"
+
 	"github.com/jingweno/jqplay/config"
 	"github.com/jingweno/jqplay/server/middleware"
+	"github.com/jingweno/jqplay/server/storage/boltstore"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/gin-gonic/gin.v1"
 )
@@ -26,12 +29,18 @@ func (s *Server) Start() error {
 	stop := make(chan os.Signal)
 	signal.Notify(stop, os.Interrupt)
 
-	db, err := ConnectDB(s.Config.DatabaseURL)
+	db, err := bolt.Open(s.Config.DatabaseFile, 0600, nil)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	store, err := boltstore.NewBoltDbStore(db)
 	if err != nil {
 		return err
 	}
 
-	h := &JQHandler{Config: s.Config, DB: db}
+	h := &JQHandler{Config: s.Config, Store: store}
 
 	tmpl := template.New("index.tmpl")
 	tmpl.Delims("#{", "}")

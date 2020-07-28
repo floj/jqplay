@@ -9,6 +9,7 @@ import (
 
 	"github.com/jingweno/jqplay/config"
 	"github.com/jingweno/jqplay/jq"
+	"github.com/jingweno/jqplay/server/storage"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/gin-gonic/gin.v1"
 )
@@ -31,7 +32,7 @@ func (c *JQHandlerContext) ShouldInitJQ() bool {
 }
 
 type JQHandler struct {
-	DB     *DB
+	Store  storage.Store
 	Config *config.Config
 }
 
@@ -40,8 +41,8 @@ func (h *JQHandler) handleIndex(c *gin.Context) {
 }
 
 func (h *JQHandler) handleJqPost(c *gin.Context) {
-	var j *jq.JQ
-	if err := c.BindJSON(&j); err != nil {
+	j := &jq.JQ{}
+	if err := c.BindJSON(j); err != nil {
 		err = fmt.Errorf("error parsing JSON: %s", err)
 		h.logger(c).WithError(err).Info("error parsing JSON")
 		c.String(http.StatusUnprocessableEntity, err.Error())
@@ -60,14 +61,14 @@ func (h *JQHandler) handleJqPost(c *gin.Context) {
 }
 
 func (h *JQHandler) handleJqGet(c *gin.Context) {
-	jq := &jq.JQ{
+	j := &jq.JQ{
 		J: c.Query("j"),
 		Q: c.Query("q"),
 	}
 
 	var jqData string
-	if err := jq.Validate(); err == nil {
-		d, err := json.Marshal(jq)
+	if err := j.Validate(); err == nil {
+		d, err := json.Marshal(j)
 		if err == nil {
 			jqData = string(d)
 		}
@@ -77,20 +78,20 @@ func (h *JQHandler) handleJqGet(c *gin.Context) {
 }
 
 func (h *JQHandler) handleJqSharePost(c *gin.Context) {
-	var jq *jq.JQ
-	if err := c.BindJSON(&jq); err != nil {
+	j := &jq.JQ{}
+	if err := c.BindJSON(j); err != nil {
 		err = fmt.Errorf("error parsing JSON: %s", err)
 		h.logger(c).WithError(err).Info("error parsing JSON")
 		c.String(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	if err := jq.Validate(); err != nil {
+	if err := j.Validate(); err != nil {
 		c.String(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	id, err := h.DB.UpsertSnippet(FromJQ(jq))
+	id, err := h.Store.Put(j)
 	if err != nil {
 		h.logger(c).WithError(err).Info("error upserting snippet")
 		c.String(http.StatusUnprocessableEntity, "error sharing snippet")
@@ -103,15 +104,15 @@ func (h *JQHandler) handleJqSharePost(c *gin.Context) {
 func (h *JQHandler) handleJqShareGet(c *gin.Context) {
 	id := c.Param("id")
 
-	s, err := h.DB.GetSnippet(id)
+	j, err := h.Store.Get(id)
 	if err != nil {
-		h.logger(c).WithError(err).WithField("id", id).Info("error getting snippet")
-		c.Redirect(http.StatusFound, "/")
+		h.logger(c).WithError(err).WithField("id", id).WithError(err).Info("error getting snippet")
+		c.Redirect(http.StatusInternalServerError, "/")
 		return
 	}
 
 	var jqData string
-	d, err := json.Marshal(ToJQ(s))
+	d, err := json.Marshal(j)
 	if err == nil {
 		jqData = string(d)
 	}
