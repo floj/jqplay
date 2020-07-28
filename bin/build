@@ -5,5 +5,5 @@
 
 set -e
 
-go build -o ./bin/jqplay ./cmd/jqplay
+go build -v -o jqplay ./cmd/jqplay
 npm install

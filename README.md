@@ -7,11 +7,7 @@ A playground for [jq](https://github.com/stedolan/jq) made with love by [@jingwe
 ## Development
 
 To develop `jqplay`, you need to have a [Go development environment](http://golang.org/doc/install).
-You also need to have Node & Postgresql installed.
-
-### bin/setup
-
-This script will setup Postgresql for `jqplay`.
+You also need to have Node and `jq` installed.
 
 ### bin/start
 

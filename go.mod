@@ -6,6 +6,7 @@ replace github.com/jingweno/jqplay => ./
 
 require (
 	github.com/boltdb/bolt v1.3.1
+	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/jingweno/jqplay v0.0.0-00010101000000-000000000000
 	github.com/joeshaw/envdecode v0.0.0-20200121155833-099f1fc765bd
 	github.com/satori/go.uuid v1.2.0

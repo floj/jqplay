@@ -1,17 +1,31 @@
-FROM golang:1.7
+FROM golang:1-alpine as builder
+ENV CGO_ENABLED=0
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		nodejs \
-		npm \
-	&& npm install --global grunt-cli bower \
-	&& rm -rf /vr/lib/apt/lists/* \
-	&& ln -s "$(which nodejs)" /usr/bin/node
+RUN apk add --no-cache bash nodejs npm git curl \
+	&& npm install --global grunt-cli bower
+RUN  curl -Lfo /bin/jq "https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64" \
+	&& chmod +x /bin/jq
+RUN addgroup -g 10001 scratch \
+	&& adduser -h /app -D -G scratch -u 10001 scratch
 
-ENV PORT 80
+COPY . /app
+RUN chown -R scratch:scratch /app
+USER scratch
+WORKDIR /app
 
-ADD . $GOPATH/src/github.com/jingweno/jqplay
-WORKDIR $GOPATH/src/github.com/jingweno/jqplay
 RUN bin/build
-EXPOSE 80
+RUN touch /app/jqplay.boltdb
 
-CMD ["bin/jqplay"]
+FROM scratch
+ENV PORT=8080
+ENV DATABASE_FILE=/jqplay.boltdb
+ENV PATH=/bin
+COPY --from=builder /etc/passwd /etc/group /etc/
+COPY --from=builder /bin/jq /bin/jq
+COPY --from=builder /app/jqplay /bin/jqplay
+COPY --from=builder /app/public /srv/public
+COPY --from=builder /app/jqplay.boltdb /jqplay.boltdb
+WORKDIR /srv
+USER scratch
+EXPOSE 8080
+CMD ["/bin/jqplay"]
