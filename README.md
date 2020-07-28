@@ -1,4 +1,10 @@
-# Changes compated to github.com/jingweno
+# jqplay
+
+https://jqplay.org [![Build Status](https://travis-ci.org/floj/jqplay.svg?branch=master)](https://travis-ci.org/floj/jqplay) [![OpenCollective](https://opencollective.com/jqplay/backers/badge.svg)](#backers) [![OpenCollective](https://opencollective.com/jqplay/sponsors/badge.svg)](#sponsors)
+
+A playground for [jq](https://github.com/stedolan/jq) made with love by [@jingweno](https://github.com/jingweno), [@lokywin](https://github.com/lokywin) and [@leoping](https://github.com/leoping). Please put it into good use.
+
+## Changes compated to github.com/jingweno
 
 - Replaced SQL storage (used for snippets) with embedded [bolddb](https://github.com/boltdb/bolt)
 - Updated Dockerfile to take advantage of multistage builds, final image is build _form scratch_ and runs as non-root user
@@ -6,11 +12,15 @@
 
 Especially the dropped SQL dependency makes it easier to run it locally or in a selfhosted environment without the need for another container running postgres.
 
-# jqplay
+## Run with docker
 
-https://jqplay.org [![Build Status](https://travis-ci.org/jingweno/jqplay.svg?branch=master)](https://travis-ci.org/jingweno/jqplay) [![OpenCollective](https://opencollective.com/jqplay/backers/badge.svg)](#backers) [![OpenCollective](https://opencollective.com/jqplay/sponsors/badge.svg)](#sponsors)
+```sh
+# build image
+docker build -t jqplay .
 
-A playground for [jq](https://github.com/stedolan/jq) made with love by [@jingweno](https://github.com/jingweno), [@lokywin](https://github.com/lokywin) and [@leoping](https://github.com/leoping). Please put it into good use.
+# run container
+docker run -ti --rm jqplay
+```
 
 ## Development
 
