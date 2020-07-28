@@ -8,7 +8,7 @@ A playground for [jq](https://github.com/stedolan/jq) made with love by [@jingwe
 
 - Replaced SQL storage (used for snippets) with embedded [bolddb](https://github.com/boltdb/bolt)
 - Updated Dockerfile to take advantage of multistage builds, final image is build _form scratch_ and runs as non-root user
-- Removed and Google Analytics and Ads
+- Removed Google Analytics and Ads
 
 Especially the dropped SQL dependency makes it easier to run it locally or in a selfhosted environment without the need for another container running postgres.
 
